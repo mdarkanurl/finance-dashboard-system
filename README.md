@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
 </p>
@@ -96,3 +97,7 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+=======
+# finance-dashboard-system
+This is a finance dashboard system. The system should support the storage and management of financial entries, user roles, permissions, and summary level analytics.
+>>>>>>> 5c4810c9c4d865ab3246c4b6a98cfecf9fbbe1cf
