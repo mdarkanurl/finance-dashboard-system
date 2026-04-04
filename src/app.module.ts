@@ -7,13 +7,14 @@ import { ConfigModule } from '@nestjs/config';
 import config from './config/configuration';
 import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './authorization/guards/roles.guard';
+import { UsersModule } from './users/users.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
       envFilePath: `.env`,
-    }), AuthModule],
+    }), AuthModule, UsersModule],
   controllers: [AppController],
   providers: [
     AppService,
