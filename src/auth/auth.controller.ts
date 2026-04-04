@@ -6,9 +6,11 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Post,
+  Req,
   Res,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { type Response } from 'express';
+import { type Request, type Response } from 'express';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { signupZodSchema, type SignupZodSchemaDto } from './dto/signup.dto';
@@ -71,6 +73,43 @@ export class AuthController {
       return {
         success: true,
         message: "Logged in successfully",
+        data: null,
+        error: null
+      }
+    } catch (error) {
+      throw error instanceof HttpException
+      ? error
+      : new InternalServerErrorException('Failed to create user');
+    }
+  }
+
+  @Public()
+  @Post('/refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      const refreshToken: string | null = req.cookies['refresh_token'];
+
+      if(!refreshToken) {
+        throw new UnauthorizedException('Refresh token is required');
+      }
+
+      const accessToken = this.authService.refresh(refreshToken);
+
+      // Set access token in cookie
+      res.cookie('access_token', accessToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: 'strict',
+        maxAge: 60000 * 15, // minutes
+      });
+
+      return {
+        success: true,
+        message: "Set access token successfully",
         data: null,
         error: null
       }

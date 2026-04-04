@@ -1,4 +1,4 @@
-import { BadRequestException, ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { SignupZodSchemaDto } from './dto/signup.dto';
 import bcrypt from "bcryptjs";
@@ -7,6 +7,7 @@ import { SigninZodSchemaDto } from './dto/signin.dto';
 import jwt from "jsonwebtoken";
 import { ConfigService } from '@nestjs/config';
 import { Role } from '@prisma/client';
+import { JwtPayload } from "./interfaces/jwt-payload.interface";
 
 @Injectable()
 export class AuthService {
@@ -120,5 +121,28 @@ export class AuthService {
         } catch (error) {
             throw error;
         }
+    }
+
+    refresh(
+        refreshToken: string
+    ) {
+        const JWT_SECRET = this.configService
+            .get<string>('JWT_SECRET_FOR_REFRESH_TOKEN');
+
+        if(!JWT_SECRET) {
+            throw new Error('JWT_SECRET_FOR_REFRESH_TOKEN is not defined in environment variables');
+        }
+
+        let payload: JwtPayload;
+        try {
+            payload = jwt.verify(refreshToken, JWT_SECRET) as JwtPayload;
+        } catch (error) {
+            throw new UnauthorizedException('Invalid or expired refresh token');
+        }
+
+        return this.signJwtAccessToken({
+            userId: payload.userId,
+            userRole: payload.userRole
+        });
     }
 }
