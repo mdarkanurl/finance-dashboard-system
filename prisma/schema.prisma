@@ -29,8 +29,11 @@ model User {
   fullname      String
   email         String  @unique
   password      String
-  role          Role
-  status        Status
+  role          Role    @default(viewer)
+  status        Status  @default(active)
+
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 
   @@index([id, email])
   @@map("user")

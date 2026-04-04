@@ -24,8 +24,6 @@ export class AuthService {
                     id: true,
                     fullname: true,
                     email: true,
-                    role: true,
-                    status: true
                 }
             });
         } catch (error) {
