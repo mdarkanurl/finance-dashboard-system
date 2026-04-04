@@ -6,7 +6,7 @@ export const signupZodSchema = z.object({
     email: z.string().trim().toLowerCase().email(),
     password: z.string().min(8).max(128),
     role: z.nativeEnum(Role),
-    status: z.nativeEnum(Status).default(Status.active)
+    status: z.enum([Status.active])
 });
 
 export type SignupZodSchemaDto = z.infer<typeof signupZodSchema>;
