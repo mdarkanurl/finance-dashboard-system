@@ -16,7 +16,7 @@ datasource db {
 enum Role {
   viewer
   analyst
-  Admin
+  admin
 }
 
 enum Status {
@@ -27,12 +27,11 @@ enum Status {
 model User {
   id            String  @id   @default(cuid())
   fullname      String
-  email         String
+  email         String  @unique
   password      String
   role          Role
   status        Status
 
   @@index([id, email])
-  @@unique([id, email])
   @@map("user")
 }

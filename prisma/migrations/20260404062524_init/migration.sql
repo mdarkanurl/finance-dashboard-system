@@ -1,5 +1,5 @@
 -- CreateEnum
-CREATE TYPE "Role" AS ENUM ('viewer', 'analyst', 'Admin');
+CREATE TYPE "Role" AS ENUM ('viewer', 'analyst', 'admin');
 
 -- CreateEnum
 CREATE TYPE "Status" AS ENUM ('active', 'inactive');
@@ -17,7 +17,7 @@ CREATE TABLE "user" (
 );
 
 -- CreateIndex
-CREATE INDEX "user_id_email_idx" ON "user"("id", "email");
+CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "user_id_email_key" ON "user"("id", "email");
+CREATE INDEX "user_id_email_idx" ON "user"("id", "email");
