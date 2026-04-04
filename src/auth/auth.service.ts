@@ -46,7 +46,11 @@ export class AuthService {
         payload: { userId: string, userRole: Role }
     ): string {
         const JWT_SECRET = this.configService
-            .get<string>('JWT_SECRET_FOR_ACCESS_TOKEN') || "e12fed28-973a-4a80-a324-01bc12f8deeb";
+            .get<string>('JWT_SECRET_FOR_ACCESS_TOKEN');
+
+        if(!JWT_SECRET) {
+            throw new Error('JWT_SECRET_FOR_REFRESH_TOKEN is not defined in environment variables');
+        }
             
         return jwt.sign(
             payload,
@@ -59,7 +63,11 @@ export class AuthService {
         payload: { userId: string, userRole: Role }
     ): string {
         const JWT_SECRET = this.configService
-            .get<string>('JWT_SECRET_FOR_REFRESH_TOKEN') || "e12fed28-973a-4a80-a324-01bc12f8deeb";
+            .get<string>('JWT_SECRET_FOR_REFRESH_TOKEN');
+
+        if(!JWT_SECRET) {
+            throw new Error('JWT_SECRET_FOR_REFRESH_TOKEN is not defined in environment variables');
+        }
             
         return jwt.sign(
             payload,

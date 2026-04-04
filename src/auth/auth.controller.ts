@@ -1,14 +1,25 @@
-import { Body, Controller, Get, HttpCode, HttpException, HttpStatus, InternalServerErrorException, Post, Res, UsePipes } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  HttpStatus,
+  InternalServerErrorException,
+  Post,
+  Res,
+} from '@nestjs/common';
+import { type Response } from 'express';
 import { AuthService } from './auth.service';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { signupZodSchema, type SignupZodSchemaDto } from './dto/signup.dto';
-import { type Response } from 'express';
 import { signinZodSchema, type SigninZodSchemaDto } from './dto/signin.dto';
+import { Public } from './decorators/public.decorator';
 
 @Controller({ path: "auth", version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @Public()
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
   async signup(
@@ -31,6 +42,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
   async signin(
