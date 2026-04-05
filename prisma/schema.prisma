@@ -32,9 +32,36 @@ model User {
   role          Role    @default(viewer)
   status        Status  @default(active)
 
+  records       Record[]
+
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
   @@index([id, email])
   @@map("user")
+}
+
+// schema for records model
+
+enum RecordType {
+  income
+  expense
+}
+
+model Record {
+  id            String  @id   @default(cuid())
+
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  amount        Int
+  type          RecordType
+  category      String
+  date          DateTime
+  note          String?
+
+  updatedAt     DateTime      @updatedAt
+
+  @@index([id])
+  @@map("record")
 }
