@@ -4,6 +4,7 @@ import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateUserByAdminDto } from './dto/create-user-by-admin.dto';
 import { GetUsersQueryDto } from './dto/get-users-query.dto';
+import { UpdateUserByAdminDto } from './dto/update-user-by-admin.dto';
 
 @Injectable()
 export class UsersService {
@@ -36,6 +37,35 @@ export class UsersService {
         error.code === 'P2002'
       ) {
         throw new ConflictException('user already exists');
+      }
+
+      throw error;
+    }
+  }
+
+  async updateByAdmin(
+    id: string,
+    data: UpdateUserByAdminDto
+  ) {
+    try {
+      return await this.prisma.user.update({
+        where: { id },
+        data,
+        select: {
+          id: true,
+          fullname: true,
+          email: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (error instanceof PrismaClientKnownRequestError) {
+        if (error.code === 'P2025') {
+          throw new NotFoundException('user not found');
+        }
       }
 
       throw error;

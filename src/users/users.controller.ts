@@ -7,6 +7,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Param,
+  Patch,
   Post,
   Query,
 } from '@nestjs/common';
@@ -18,6 +19,10 @@ import {
   type CreateUserByAdminDto,
 } from './dto/create-user-by-admin.dto';
 import { getUsersQuerySchema, type GetUsersQueryDto } from './dto/get-users-query.dto';
+import {
+  updateUserByAdminSchema,
+  type UpdateUserByAdminDto,
+} from './dto/update-user-by-admin.dto';
 import { UsersService } from './users.service';
 
 @Controller({ path: 'users', version: '1' })
@@ -87,6 +92,29 @@ export class UsersController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to fetch user');
+    }
+  }
+
+  @Roles(Role.admin)
+  @Patch('/:id')
+  async update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateUserByAdminSchema))
+    body: UpdateUserByAdminDto
+  ) {
+    try {
+      const user = await this.usersService.updateByAdmin(id, body);
+
+      return {
+        success: true,
+        message: 'user updated successfully',
+        data: user,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to update user');
     }
   }
 }
