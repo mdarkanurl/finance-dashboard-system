@@ -15,10 +15,37 @@ import {
   getDashboardTrendsQuerySchema,
   type GetDashboardTrendsQueryDto,
 } from './dto/get-dashboard-trends-query.dto';
+import {
+  getDashboardRecentQuerySchema,
+  type GetDashboardRecentQueryDto,
+} from './dto/get-dashboard-recent-query.dto';
 
 @Controller({ path: 'dashboard', version: '1' })
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
+
+  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @Get('/recent')
+  @HttpCode(HttpStatus.OK)
+  async getRecent(
+    @Query(new ZodValidationPipe(getDashboardRecentQuerySchema))
+    query: GetDashboardRecentQueryDto,
+  ) {
+    try {
+      const recentTransactions = await this.dashboardService.getRecent(query);
+
+      return {
+        success: true,
+        message: 'dashboard recent transactions fetched successfully',
+        data: recentTransactions,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to fetch dashboard recent transactions');
+    }
+  }
 
   @Roles(Role.viewer, Role.analyst, Role.admin)
   @Get('/trends')

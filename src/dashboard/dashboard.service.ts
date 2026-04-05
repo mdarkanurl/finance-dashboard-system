@@ -1,11 +1,38 @@
 import { Injectable } from '@nestjs/common';
 import { RecordType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetDashboardRecentQueryDto } from './dto/get-dashboard-recent-query.dto';
 import { GetDashboardTrendsQueryDto } from './dto/get-dashboard-trends-query.dto';
 
 @Injectable()
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getRecent(
+    query: GetDashboardRecentQueryDto,
+  ) {
+    const { limit } = query;
+
+    return this.prisma.record.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        date: 'desc',
+      },
+      take: limit,
+      select: {
+        id: true,
+        createdBy: true,
+        amount: true,
+        type: true,
+        category: true,
+        date: true,
+        note: true,
+        updatedAt: true,
+      },
+    });
+  }
 
   async getTrends(
     query: GetDashboardTrendsQueryDto,
