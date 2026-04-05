@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RecordType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetDashboardRecentQueryDto } from './dto/get-dashboard-recent-query.dto';
+import { GetDashboardSummaryQueryDto } from './dto/get-dashboard-summary-query.dto';
 import { GetDashboardTrendsQueryDto } from './dto/get-dashboard-trends-query.dto';
 
 @Injectable()
@@ -119,9 +120,25 @@ export class DashboardService {
     });
   }
 
-  async getSummary() {
+  async getSummary(
+    query: GetDashboardSummaryQueryDto,
+  ) {
+    const { from, to, category } = query;
+
     const where = {
       deletedAt: null,
+      ...(category && {
+        category: {
+          contains: category,
+          mode: 'insensitive' as const,
+        },
+      }),
+      ...((from || to) && {
+        date: {
+          ...(from && { gte: from }),
+          ...(to && { lte: to }),
+        },
+      }),
     };
 
     const [incomeSummary, expenseSummary, totalTransactions] =

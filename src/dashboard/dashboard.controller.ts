@@ -12,6 +12,10 @@ import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { DashboardService } from './dashboard.service';
 import {
+  getDashboardSummaryQuerySchema,
+  type GetDashboardSummaryQueryDto,
+} from './dto/get-dashboard-summary-query.dto';
+import {
   getDashboardTrendsQuerySchema,
   type GetDashboardTrendsQueryDto,
 } from './dto/get-dashboard-trends-query.dto';
@@ -93,9 +97,12 @@ export class DashboardController {
   @Roles(Role.viewer, Role.analyst, Role.admin)
   @Get('/summary')
   @HttpCode(HttpStatus.OK)
-  async getSummary() {
+  async getSummary(
+    @Query(new ZodValidationPipe(getDashboardSummaryQuerySchema))
+    query: GetDashboardSummaryQueryDto,
+  ) {
     try {
-      const summary = await this.dashboardService.getSummary();
+      const summary = await this.dashboardService.getSummary(query);
 
       return {
         success: true,
