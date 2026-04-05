@@ -1,10 +1,56 @@
 import { Injectable } from '@nestjs/common';
 import { RecordType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { GetDashboardTrendsQueryDto } from './dto/get-dashboard-trends-query.dto';
 
 @Injectable()
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getTrends(
+    query: GetDashboardTrendsQueryDto,
+  ) {
+    const records = await this.prisma.record.findMany({
+      where: {
+        deletedAt: null,
+      },
+      orderBy: {
+        date: 'asc',
+      },
+      select: {
+        amount: true,
+        type: true,
+        date: true,
+      },
+    });
+
+    const trendsMap = new Map<string, { date: string; income: number; expense: number }>();
+
+    for (const record of records) {
+      const key =
+        query.range === 'monthly'
+          ? this.formatMonth(record.date)
+          : this.getWeekStartDate(record.date);
+
+      const current = trendsMap.get(key) ?? {
+        date: key,
+        income: 0,
+        expense: 0,
+      };
+
+      if (record.type === RecordType.income) {
+        current.income += record.amount;
+      }
+
+      if (record.type === RecordType.expense) {
+        current.expense += record.amount;
+      }
+
+      trendsMap.set(key, current);
+    }
+
+    return Array.from(trendsMap.values());
+  }
 
   async getCategories() {
     const where = {
@@ -83,5 +129,25 @@ export class DashboardService {
       netBalance: totalIncome - totalExpense,
       totalTransactions,
     };
+  }
+
+  private formatMonth(date: Date) {
+    const year = date.getUTCFullYear();
+    const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+
+    return `${year}-${month}`;
+  }
+
+  private getWeekStartDate(date: Date) {
+    const utcDate = new Date(
+      Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()),
+    );
+
+    const day = utcDate.getUTCDay();
+    const diff = day === 0 ? -6 : 1 - day;
+
+    utcDate.setUTCDate(utcDate.getUTCDate() + diff);
+
+    return utcDate.toISOString().split('T')[0];
   }
 }

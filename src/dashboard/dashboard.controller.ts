@@ -5,14 +5,43 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  Query,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { Roles } from 'src/authorization/decorators/roles.decorator';
+import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { DashboardService } from './dashboard.service';
+import {
+  getDashboardTrendsQuerySchema,
+  type GetDashboardTrendsQueryDto,
+} from './dto/get-dashboard-trends-query.dto';
 
 @Controller({ path: 'dashboard', version: '1' })
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
+
+  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @Get('/trends')
+  @HttpCode(HttpStatus.OK)
+  async getTrends(
+    @Query(new ZodValidationPipe(getDashboardTrendsQuerySchema))
+    query: GetDashboardTrendsQueryDto,
+  ) {
+    try {
+      const trends = await this.dashboardService.getTrends(query);
+
+      return {
+        success: true,
+        message: 'dashboard trends fetched successfully',
+        data: trends,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to fetch dashboard trends');
+    }
+  }
 
   @Roles(Role.viewer, Role.analyst, Role.admin)
   @Get('/categories')
