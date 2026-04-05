@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { GetRecordsQueryDto } from './dto/get-records-query.dto';
@@ -11,12 +11,16 @@ export class RecordsService {
     userId: string,
     data: CreateRecordDto
   ) {
-    return this.prisma.record.create({
-      data: {
-        ...data,
-        createdBy: userId
-      }
-    });
+    try {
+      return this.prisma.record.create({
+        data: {
+          ...data,
+          createdBy: userId
+        }
+      });
+    } catch (error) {
+      throw error;
+    }
   }
 
   async findAll(
@@ -77,5 +81,23 @@ export class RecordsService {
         to: to ?? null,
       },
     };
+  }
+
+  async findOne(
+    id: string
+  ) {
+    try {
+      const record = await this.prisma.record.findUnique({
+        where: { id },
+      });
+
+      if (!record) {
+        throw new NotFoundException('record not found');
+      }
+
+      return record;
+    } catch (error) {
+      throw error;
+    }
   }
 }

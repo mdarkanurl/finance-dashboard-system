@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   InternalServerErrorException,
+  Param,
   Post,
   Query,
   Req,
@@ -74,6 +75,28 @@ export class RecordsController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to fetch records');
+    }
+  }
+
+  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @Get('/:id')
+  @HttpCode(HttpStatus.OK)
+  async findOne(
+    @Param('id') id: string
+  ) {
+    try {
+      const record = await this.recordsService.findOne(id);
+
+      return {
+        success: true,
+        message: 'record fetched successfully',
+        data: record,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to fetch record');
     }
   }
 }
