@@ -5,7 +5,6 @@ export const createRecordSchema = z.object({
   amount: z.coerce.number().int().positive(),
   type: z.nativeEnum(RecordType, { message: 'Type is required' }),
   category: z.string({ message: 'Category is required' }).trim().min(1),
-  date: z.coerce.date(),
   note: z.string({ message: 'Note is required' }).trim().min(1).max(255).optional(),
 });
 

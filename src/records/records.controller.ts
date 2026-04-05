@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpException,
   HttpStatus,
   InternalServerErrorException,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { Role } from '@prisma/client';
@@ -15,6 +17,10 @@ import {
   createRecordSchema,
   type CreateRecordDto,
 } from './dto/create-record.dto';
+import {
+  getRecordsQuerySchema,
+  type GetRecordsQueryDto,
+} from './dto/get-records-query.dto';
 import { RecordsService } from './records.service';
 import { type Request } from 'express';
 
@@ -44,6 +50,30 @@ export class RecordsController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to create record');
+    }
+  }
+
+  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @Get()
+  @HttpCode(HttpStatus.OK)
+  async findAll(
+    @Query(new ZodValidationPipe(getRecordsQuerySchema))
+    query: GetRecordsQueryDto
+  ) {
+    try {
+      const result = await this.recordsService.findAll(query);
+
+      return {
+        success: true,
+        message: 'records fetched successfully',
+        data: result,
+        error: null,
+      };
+    } catch (error) {
+      console.log(error);
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to fetch records');
     }
   }
 }

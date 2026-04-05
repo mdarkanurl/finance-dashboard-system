@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRecordDto } from './dto/create-record.dto';
+import { GetRecordsQueryDto } from './dto/get-records-query.dto';
 
 @Injectable()
 export class RecordsService {
@@ -16,5 +17,65 @@ export class RecordsService {
         createdBy: userId
       }
     });
+  }
+
+  async findAll(
+    query: GetRecordsQueryDto
+  ) {
+    const { type, category, from, to, page, limit } = query;
+
+    const where = {
+      ...(type && { type }),
+      ...(category && {
+        category: {
+          contains: category,
+          mode: 'insensitive' as const,
+        },
+      }),
+      ...((from || to) && {
+        date: {
+          ...(from && { gte: from }),
+          ...(to && { lte: to }),
+        },
+      }),
+    };
+
+    const [records, total] = await this.prisma.$transaction([
+      this.prisma.record.findMany({
+        where,
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+          date: 'desc',
+        },
+        select: {
+          id: true,
+          createdBy: true,
+          amount: true,
+          type: true,
+          category: true,
+          date: true,
+          note: true,
+          updatedAt: true,
+        },
+      }),
+      this.prisma.record.count({ where }),
+    ]);
+
+    return {
+      records,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+      filters: {
+        type: type ?? null,
+        category: category ?? null,
+        from: from ?? null,
+        to: to ?? null,
+      },
+    };
   }
 }
