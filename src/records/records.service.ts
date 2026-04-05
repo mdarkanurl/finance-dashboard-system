@@ -31,6 +31,7 @@ export class RecordsService {
     const { type, category, from, to, page, limit } = query;
 
     const where = {
+      deletedAt: null,
       ...(type && { type }),
       ...(category && {
         category: {
@@ -90,7 +91,10 @@ export class RecordsService {
   ) {
     try {
       const record = await this.prisma.record.findUnique({
-        where: { id },
+        where: {
+          id,
+          deletedAt: null
+        },
       });
 
       if (!record) {
@@ -104,13 +108,46 @@ export class RecordsService {
   }
 
   async update(
+    userId: string,
     id: string,
     data: UpdateRecordDto
   ) {
     try {
       return await this.prisma.record.update({
-        where: { id },
+        where: {
+          id,
+          deletedAt: null,
+          createdBy: userId
+        },
         data,
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('record not found');
+      }
+
+      throw error;
+    }
+  }
+
+  async remove(
+    id: string,
+    userId: string
+  ) {
+    try {
+      const now = new Date().toISOString();
+      return await this.prisma.record.update({
+        where: {
+          id,
+          deletedAt: null,
+          createdBy: userId
+        },
+        data: {
+          deletedAt: now
+        }
       });
     } catch (error) {
       if (

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpException,
@@ -111,10 +112,12 @@ export class RecordsController {
   async update(
     @Param('id') id: string,
     @Body(new ZodValidationPipe(updateRecordSchema))
-    body: UpdateRecordDto
+    body: UpdateRecordDto,
+    @Req() req: Request
   ) {
     try {
-      const record = await this.recordsService.update(id, body);
+      const userId = req.user?.userId as string;
+      const record = await this.recordsService.update(userId, id, body);
 
       return {
         success: true,
@@ -126,6 +129,30 @@ export class RecordsController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to update record');
+    }
+  }
+
+  @Roles(Role.admin)
+  @Delete('/:id')
+  @HttpCode(HttpStatus.OK)
+  async remove(
+    @Param('id') id: string,
+    @Req() req: Request
+  ) {
+    try {
+      const userId = req.user?.userId as string;
+      const record = await this.recordsService.remove(id, userId);
+
+      return {
+        success: true,
+        message: 'record deleted successfully',
+        data: record,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to delete record');
     }
   }
 }
