@@ -13,7 +13,7 @@ export class RecordsService {
     return this.prisma.record.create({
       data: {
         ...data,
-        userId
+        createdBy: userId
       }
     });
   }

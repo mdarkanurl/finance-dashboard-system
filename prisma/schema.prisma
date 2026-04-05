@@ -51,8 +51,8 @@ enum RecordType {
 model Record {
   id            String  @id   @default(cuid())
 
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdBy     String
+  user          User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
 
   amount        Int
   type          RecordType
