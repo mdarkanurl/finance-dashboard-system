@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpCode,
@@ -53,6 +54,7 @@ export class UsersController {
   }
 
   @Roles(Role.admin)
+  @HttpCode(HttpStatus.OK)
   @Get()
   async findAll(
     @Query(new ZodValidationPipe(getUsersQuerySchema))
@@ -75,6 +77,7 @@ export class UsersController {
   }
 
   @Roles(Role.admin)
+  @HttpCode(HttpStatus.OK)
   @Get('/:id')
   async findOne(
     @Param('id') id: string
@@ -96,6 +99,7 @@ export class UsersController {
   }
 
   @Roles(Role.admin)
+  @HttpCode(HttpStatus.OK)
   @Patch('/:id')
   async update(
     @Param('id') id: string,
@@ -115,6 +119,28 @@ export class UsersController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to update user');
+    }
+  }
+
+  @Roles(Role.admin)
+  @HttpCode(HttpStatus.OK)
+  @Delete('/:id')
+  async remove(
+    @Param('id') id: string
+  ) {
+    try {
+      const user = await this.usersService.deleteByAdmin(id);
+
+      return {
+        success: true,
+        message: 'user deactivated successfully',
+        data: user,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to delete user');
     }
   }
 }

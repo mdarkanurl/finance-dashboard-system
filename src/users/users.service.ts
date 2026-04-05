@@ -1,4 +1,5 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { Status } from '@prisma/client';
 import bcrypt from 'bcryptjs';
 import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -66,6 +67,40 @@ export class UsersService {
         if (error.code === 'P2025') {
           throw new NotFoundException('user not found');
         }
+      }
+
+      throw error;
+    }
+  }
+
+  async deleteByAdmin(
+    id: string
+  ) {
+    try {
+      return await this.prisma.user.update({
+        where: { 
+          id,
+          status: Status.active
+         },
+        data: {
+          status: Status.inactive,
+        },
+        select: {
+          id: true,
+          fullname: true,
+          email: true,
+          role: true,
+          status: true,
+          createdAt: true,
+          updatedAt: true,
+        },
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('user not found');
       }
 
       throw error;
