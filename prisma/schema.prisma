@@ -57,7 +57,7 @@ model Record {
   amount        Int
   type          RecordType
   category      String
-  date          DateTime
+  date          DateTime  @default(now())
   note          String?
 
   updatedAt     DateTime      @updatedAt
