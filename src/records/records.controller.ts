@@ -35,7 +35,7 @@ import { type Request } from 'express';
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.viewer)
   @Post()
   @HttpCode(HttpStatus.CREATED)
   async create(
@@ -106,7 +106,7 @@ export class RecordsController {
     }
   }
 
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.viewer)
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
   async update(
@@ -132,7 +132,7 @@ export class RecordsController {
     }
   }
 
-  @Roles(Role.admin)
+  @Roles(Role.admin, Role.viewer)
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)
   async remove(
