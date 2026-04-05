@@ -9,13 +9,14 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
 import { RolesGuard } from './authorization/guards/roles.guard';
 import { UsersModule } from './users/users.module';
 import { RecordsModule } from './records/records.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
       envFilePath: `.env`,
-    }), AuthModule, UsersModule, RecordsModule],
+    }), AuthModule, UsersModule, RecordsModule, DashboardModule],
   controllers: [AppController],
   providers: [
     AppService,
