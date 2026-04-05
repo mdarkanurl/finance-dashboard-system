@@ -7,6 +7,7 @@ import {
   HttpStatus,
   InternalServerErrorException,
   Param,
+  Patch,
   Post,
   Query,
   Req,
@@ -22,6 +23,10 @@ import {
   getRecordsQuerySchema,
   type GetRecordsQueryDto,
 } from './dto/get-records-query.dto';
+import {
+  updateRecordSchema,
+  type UpdateRecordDto,
+} from './dto/update-record.dto';
 import { RecordsService } from './records.service';
 import { type Request } from 'express';
 
@@ -97,6 +102,30 @@ export class RecordsController {
       throw error instanceof HttpException
         ? error
         : new InternalServerErrorException('Failed to fetch record');
+    }
+  }
+
+  @Roles(Role.admin)
+  @Patch('/:id')
+  @HttpCode(HttpStatus.OK)
+  async update(
+    @Param('id') id: string,
+    @Body(new ZodValidationPipe(updateRecordSchema))
+    body: UpdateRecordDto
+  ) {
+    try {
+      const record = await this.recordsService.update(id, body);
+
+      return {
+        success: true,
+        message: 'record updated successfully',
+        data: record,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to update record');
     }
   }
 }

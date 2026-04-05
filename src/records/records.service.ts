@@ -1,7 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaClientKnownRequestError } from '@prisma/client/runtime/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateRecordDto } from './dto/create-record.dto';
 import { GetRecordsQueryDto } from './dto/get-records-query.dto';
+import { UpdateRecordDto } from './dto/update-record.dto';
 
 @Injectable()
 export class RecordsService {
@@ -97,6 +99,27 @@ export class RecordsService {
 
       return record;
     } catch (error) {
+      throw error;
+    }
+  }
+
+  async update(
+    id: string,
+    data: UpdateRecordDto
+  ) {
+    try {
+      return await this.prisma.record.update({
+        where: { id },
+        data,
+      });
+    } catch (error) {
+      if (
+        error instanceof PrismaClientKnownRequestError &&
+        error.code === 'P2025'
+      ) {
+        throw new NotFoundException('record not found');
+      }
+
       throw error;
     }
   }
