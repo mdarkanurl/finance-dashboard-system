@@ -50,7 +50,10 @@ export class UsersService {
   ) {
     try {
       return await this.prisma.user.update({
-        where: { id },
+        where: {
+          id,
+          status: Status.active
+        },
         data,
         select: {
           id: true,
@@ -113,6 +116,7 @@ export class UsersService {
     const { page, limit, search, role, status } = query;
 
     const where: any = {
+      status: Status.active,
       ...(role && { role }),
       ...(status && { status }),
       ...(search && {
@@ -174,7 +178,10 @@ export class UsersService {
     id: string
   ) {
     const user = await this.prisma.user.findUnique({
-      where: { id },
+      where: {
+        id,
+        status: Status.active
+      },
       select: {
         id: true,
         fullname: true,
