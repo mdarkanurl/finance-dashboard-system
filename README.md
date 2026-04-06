@@ -78,7 +78,7 @@ All API responses follow a consistent format:
 
 ## Contributing
 Contributions, issues, and feature requests are welcome!
-If you want to contribute to Find Decisions, please follow the guidelines outlined in the [contributing.md](contributing.md) file.
+If you want to contribute to this project, please follow the guidelines outlined in the [contributing.md](contributing.md) file.
 
 ## License
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
