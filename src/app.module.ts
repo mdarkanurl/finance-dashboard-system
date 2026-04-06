@@ -10,13 +10,19 @@ import { RolesGuard } from './authorization/guards/roles.guard';
 import { UsersModule } from './users/users.module';
 import { RecordsModule } from './records/records.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { RateLimitModule } from './rate-limit/rate-limit.module';
 
 @Module({
   imports: [ConfigModule.forRoot({
       isGlobal: true,
       load: [config],
       envFilePath: `.env`,
-    }), AuthModule, UsersModule, RecordsModule, DashboardModule],
+    }),
+    AuthModule,
+    UsersModule,
+    RecordsModule,
+    DashboardModule,
+    RateLimitModule],
   controllers: [AppController],
   providers: [
     AppService,

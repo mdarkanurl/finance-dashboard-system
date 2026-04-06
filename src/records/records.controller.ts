@@ -30,11 +30,13 @@ import {
 } from './dto/update-record.dto';
 import { RecordsService } from './records.service';
 import { type Request } from 'express';
+import { RateLimit } from 'src/rate-limit/rate-limit.decorator';
 
 @Controller({ path: 'records', version: '1' })
 export class RecordsController {
   constructor(private readonly recordsService: RecordsService) {}
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin, Role.viewer)
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -60,7 +62,7 @@ export class RecordsController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get()
   @HttpCode(HttpStatus.OK)
   async findAll(
@@ -84,7 +86,7 @@ export class RecordsController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async findOne(
@@ -106,6 +108,7 @@ export class RecordsController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin, Role.viewer)
   @Patch('/:id')
   @HttpCode(HttpStatus.OK)
@@ -132,6 +135,7 @@ export class RecordsController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin, Role.viewer)
   @Delete('/:id')
   @HttpCode(HttpStatus.OK)

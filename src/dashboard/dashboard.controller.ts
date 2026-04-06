@@ -7,8 +7,6 @@ import {
   InternalServerErrorException,
   Query,
 } from '@nestjs/common';
-import { Role } from '@prisma/client';
-import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { DashboardService } from './dashboard.service';
 import {
@@ -27,12 +25,13 @@ import {
   getDashboardRecentQuerySchema,
   type GetDashboardRecentQueryDto,
 } from './dto/get-dashboard-recent-query.dto';
+import { RateLimit } from 'src/rate-limit/rate-limit.decorator';
 
 @Controller({ path: 'dashboard', version: '1' })
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/top-categories') // return top spending categories
   @HttpCode(HttpStatus.OK)
   async getTopCategories(
@@ -55,7 +54,7 @@ export class DashboardController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/recent')
   @HttpCode(HttpStatus.OK)
   async getRecent(
@@ -78,7 +77,7 @@ export class DashboardController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/trends')
   @HttpCode(HttpStatus.OK)
   async getTrends(
@@ -101,7 +100,7 @@ export class DashboardController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/categories')
   @HttpCode(HttpStatus.OK)
   async getCategories() {
@@ -121,7 +120,7 @@ export class DashboardController {
     }
   }
 
-  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @RateLimit({ points: 15, duration: 60 })
   @Get('/summary')
   @HttpCode(HttpStatus.OK)
   async getSummary(

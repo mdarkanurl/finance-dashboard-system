@@ -25,11 +25,13 @@ import {
   type UpdateUserByAdminDto,
 } from './dto/update-user-by-admin.dto';
 import { UsersService } from './users.service';
+import { RateLimit } from 'src/rate-limit/rate-limit.decorator';
 
 @Controller({ path: 'users', version: '1' })
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin)
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -53,6 +55,7 @@ export class UsersController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin)
   @HttpCode(HttpStatus.OK)
   @Get()
@@ -76,6 +79,7 @@ export class UsersController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin)
   @HttpCode(HttpStatus.OK)
   @Get('/:id')
@@ -98,6 +102,7 @@ export class UsersController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin)
   @HttpCode(HttpStatus.OK)
   @Patch('/:id')
@@ -122,6 +127,7 @@ export class UsersController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Roles(Role.admin)
   @HttpCode(HttpStatus.OK)
   @Delete('/:id')

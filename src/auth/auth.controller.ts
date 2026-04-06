@@ -16,11 +16,13 @@ import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { signupZodSchema, type SignupZodSchemaDto } from './dto/signup.dto';
 import { signinZodSchema, type SigninZodSchemaDto } from './dto/signin.dto';
 import { Public } from './decorators/public.decorator';
+import { RateLimit } from 'src/rate-limit/rate-limit.decorator';
 
 @Controller({ path: "auth", version: '1' })
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @RateLimit({ points: 5, duration: 60 })
   @Public()
   @Post('/signup')
   @HttpCode(HttpStatus.CREATED)
@@ -44,6 +46,7 @@ export class AuthController {
     }
   }
 
+  @RateLimit({ points: 3, duration: 60 })
   @Public()
   @Post('/signin')
   @HttpCode(HttpStatus.OK)
@@ -83,6 +86,7 @@ export class AuthController {
     }
   }
 
+  @RateLimit({ points: 5, duration: 60 })
   @Public()
   @Post('/refresh')
   @HttpCode(HttpStatus.OK)
@@ -120,6 +124,7 @@ export class AuthController {
     }
   }
 
+  @RateLimit({ points: 15, duration: 60 })
   @Post('/logout')
   @HttpCode(HttpStatus.OK)
   async logout(
