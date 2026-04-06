@@ -52,3 +52,33 @@ Alternative way of running the app:
   - `/users` for admin user management
   - `/records` for record CRUD and pagination
   - `/dashboard` for summary, trends, recent transactions and categories
+
+## API Response Format
+All API responses follow a consistent format:
+
+### Success Response
+```json
+{
+  "success": true,
+  "message": "...",
+  "data": { ... },
+  "error": null
+}
+```
+
+### Error Response
+```json
+{
+  "success": false,
+  "message": "...",
+  "data": null,
+  "error": { ... }
+}
+```
+
+## Contributing
+Contributions, issues, and feature requests are welcome!
+If you want to contribute to Find Decisions, please follow the guidelines outlined in the [contributing.md](contributing.md) file.
+
+## License
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details
