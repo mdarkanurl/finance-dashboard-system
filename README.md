@@ -43,3 +43,12 @@ Alternative way of running the app:
    pnpm run start:dev   # development
    pnpm run build && pnpm run start  # production
    ```
+
+## API documentation
+- Base URL: `/api/v1`
+- Authentication: JWT access token and refresh token stored in cookies
+- Main endpoints:
+  - `/auth` for signup, signin, refresh and logout
+  - `/users` for admin user management
+  - `/records` for record CRUD and pagination
+  - `/dashboard` for summary, trends, recent transactions and categories
