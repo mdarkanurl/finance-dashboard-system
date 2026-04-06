@@ -3,11 +3,49 @@ import { RecordType } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { GetDashboardRecentQueryDto } from './dto/get-dashboard-recent-query.dto';
 import { GetDashboardSummaryQueryDto } from './dto/get-dashboard-summary-query.dto';
+import { GetDashboardTopCategoriesQueryDto } from './dto/get-dashboard-top-categories-query.dto';
 import { GetDashboardTrendsQueryDto } from './dto/get-dashboard-trends-query.dto';
 
 @Injectable()
 export class DashboardService {
   constructor(private readonly prisma: PrismaService) {}
+
+  async getTopCategories(
+    query: GetDashboardTopCategoriesQueryDto,
+  ) {
+    const { page, limit } = query;
+
+    const categories = await this.prisma.record.groupBy({
+      by: ['category'],
+      where: {
+        deletedAt: null,
+        type: RecordType.expense,
+      },
+      _sum: {
+        amount: true,
+      },
+      orderBy: {
+        _sum: {
+          amount: 'desc',
+        },
+      },
+    });
+
+    const total = categories.length;
+
+    return {
+      categories: categories.slice((page - 1) * limit, page * limit).map((item) => ({
+        category: item.category,
+        totalAmount: item._sum?.amount ?? 0,
+      })),
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
+  }
 
   async getRecent(
     query: GetDashboardRecentQueryDto,

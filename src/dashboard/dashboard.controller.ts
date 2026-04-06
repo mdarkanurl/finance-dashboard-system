@@ -12,6 +12,10 @@ import { Roles } from 'src/authorization/decorators/roles.decorator';
 import { ZodValidationPipe } from 'src/pipes/zod-validation.pipe';
 import { DashboardService } from './dashboard.service';
 import {
+  getDashboardTopCategoriesQuerySchema,
+  type GetDashboardTopCategoriesQueryDto,
+} from './dto/get-dashboard-top-categories-query.dto';
+import {
   getDashboardSummaryQuerySchema,
   type GetDashboardSummaryQueryDto,
 } from './dto/get-dashboard-summary-query.dto';
@@ -27,6 +31,29 @@ import {
 @Controller({ path: 'dashboard', version: '1' })
 export class DashboardController {
   constructor(private readonly dashboardService: DashboardService) {}
+
+  @Roles(Role.viewer, Role.analyst, Role.admin)
+  @Get('/top-categories') // return top spending categories
+  @HttpCode(HttpStatus.OK)
+  async getTopCategories(
+    @Query(new ZodValidationPipe(getDashboardTopCategoriesQuerySchema))
+    query: GetDashboardTopCategoriesQueryDto,
+  ) {
+    try {
+      const topCategories = await this.dashboardService.getTopCategories(query);
+
+      return {
+        success: true,
+        message: 'dashboard top categories fetched successfully',
+        data: topCategories,
+        error: null,
+      };
+    } catch (error) {
+      throw error instanceof HttpException
+        ? error
+        : new InternalServerErrorException('Failed to fetch dashboard top categories');
+    }
+  }
 
   @Roles(Role.viewer, Role.analyst, Role.admin)
   @Get('/recent')
