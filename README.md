@@ -1,13 +1,13 @@
 # finance dashboard system
-The system demonstrate role base access, advance pagination, clean and maintainable code, rate limiting, performance optimization and importantly a well structure codebase.
+The system demonstrate role-base access, advanced pagination, clean and maintainable code, rate limiting, performance optimization, and importantly, a well-structured codebase.
 
 ## Core features
-- Role base access with well structure implementation.
-- Secure authentication with jwt access and refresh token.
-- Advance pagination for getting summary of records.
-- Well structure, consistent and predictable APIs with best practices.
-- Rate-limit implementation with easily maintainable clean code.
-- Easy to setup locally with Docker.
+- Role-based access with well-structured implementation.
+- Secure authentication with JWT access and refresh token.
+- Advanced pagination for getting a summary of records.
+- Well-structured, consistent, and predictable APIs with best practices.
+- Rate-limit implementation with easily maintainable, clean code.
+- Easy to set up locally with Docker.
 
 ## Tech stack
 - Backend: Node.js, TypeScript, NestJS
@@ -17,7 +17,7 @@ The system demonstrate role base access, advance pagination, clean and maintaina
 - Tool: Docker
 
 ## Setup instructions
-To run the app with Docker run:
+To run the app with Docker, run:
 ```bash
    docker compose up
    ```
@@ -30,8 +30,8 @@ Alternative way of running the app:
    ```bash
    pnpm install --frozen-lockfile
    ```
-3. Add environment variable
-   create a `.env` file and add the variable. Use `.env.example` for guidance.
+3. Add an environment variable,
+   create a `.env` file, and add the variable. Use `.env.example` for guidance.
 
 4. Setup database
    ```bash
@@ -48,10 +48,10 @@ Alternative way of running the app:
 - Base URL: `/api/v1`
 - Authentication: JWT access token and refresh token stored in cookies
 - Main endpoints:
-  - `/auth` for signup, signin, refresh and logout
+  - `/auth` for signup, signin, refresh, and logout
   - `/users` for admin user management
   - `/records` for record CRUD and pagination
-  - `/dashboard` for summary, trends, recent transactions and categories
+  - `/dashboard` for summary, trends, recent transactions, and categories
 
 ## API Response Format
 All API responses follow a consistent format:
